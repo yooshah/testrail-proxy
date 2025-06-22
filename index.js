@@ -14,16 +14,18 @@ const AUTH = {
 app.get("/testrail/*", async (req, res) => {
   try {
     const proxyPath = req.originalUrl.replace("/testrail", "/index.php?");
+    console.log("➡️ Forwarding to:", `${TESTRAIL_URL}${proxyPath}`);
     const response = await axios.get(`${TESTRAIL_URL}${proxyPath}`, {
       auth: AUTH,
     });
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("❌ Proxy error:", error.message);
+    if (error.response) {
+      console.error("TestRail response error:", error.response.data);
+      res.status(error.response.status).json(error.response.data);
+    } else {
+      res.status(500).json({ error: error.message });
+    }
   }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("✅ TestRail Proxy Server running...");
 });
