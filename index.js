@@ -13,7 +13,9 @@ const AUTH = {
 
 app.get("/testrail/*", async (req, res) => {
   try {
-    const proxyPath = req.originalUrl.replace("/testrail", "/index.php?");
+    const proxyPath = req.originalUrl
+      .replace("/testrail", "/index.php?")
+      .trim();
     console.log("➡️ Forwarding to:", `${TESTRAIL_URL}${proxyPath}`);
     const response = await axios.get(`${TESTRAIL_URL}${proxyPath}`, {
       auth: AUTH,
@@ -29,6 +31,7 @@ app.get("/testrail/*", async (req, res) => {
     }
   }
 });
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ TestRail Proxy Server running on port ${PORT}`);
