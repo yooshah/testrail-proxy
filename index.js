@@ -10,16 +10,16 @@ const AUTH = {
   username: process.env.TESTRAIL_USER,
   password: process.env.TESTRAIL_API_KEY,
 };
-
 app.get("/testrail/*", async (req, res) => {
   try {
-    const proxyPath = req.originalUrl
-      .replace("/testrail", "/index.php?")
-      .trim();
+    const rawPath = req.originalUrl.replace("/testrail", "/index.php?");
+    const proxyPath = decodeURIComponent(rawPath).replace(/\n|\r/g, "").trim();
     console.log("➡️ Forwarding to:", `${TESTRAIL_URL}${proxyPath}`);
+
     const response = await axios.get(`${TESTRAIL_URL}${proxyPath}`, {
       auth: AUTH,
     });
+
     res.json(response.data);
   } catch (error) {
     console.error("❌ Proxy error:", error.message);
